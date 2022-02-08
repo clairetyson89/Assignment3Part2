@@ -1,25 +1,52 @@
-require(["esri/Map", "esri/views/MapView", "esri/layers/FeatureLayer"], (Map, MapView, FeatureLayer) => {
-       const map = new Map({
-              basemap: "gray-vector"
+    require([
+      "esri/Map",
+      "esri/layers/CSVLayer",
+      "esri/views/MapView",
+      "esri/config",
+      "esri/core/urlUtils",
+      "dojo/domReady!"
+    ], function(
+      Map,
+      CSVLayer,
+      MapView,
+      esriConfig,
+      urlUtils
+    ) {
+
+     var url = "https://raw.githubusercontent.com/gbrunner/adv-programming-for-gis-and-rs/master/Web%20Development%20Module/Unit%202%20-%20ArcGIS%20JavaScript%20API/stl_crime_wgs_84.csv";
+     esriConfig.request.corsEnabledServers.push('https://rawgit.com');
+
+        const template = {
+          title: "Earthquake Info",
+          content: "Magnitude {mag} {type} hit {place} on {time}."
+        };
+
+        const csvLayer = new CSVLayer({
+          url: url,
+          copyright: "USGS Earthquakes",
+          popupTemplate: template
         });
-       const view = new MapView({
-              container: "viewDiv",
-              map: map,
-              zoom: 5.5,
-              center: [-107.45763219522368,43.18704372075827],
-        });
-       
-       var featureLayer_1 = new FeatureLayer({
-              url: 
-              "https://services6.arcgis.com/cWzdqIyxbijuhPLw/arcgis/rest/services/Elk_Crucial_Range/FeatureServer"
-       });
-       
-       map.add(featureLayer_1);
-       
-       var featureLayer_2 = new FeatureLayer({
-              url: 
-              "https://services3.arcgis.com/HVjI8GKrRtjcQ4Ry/arcgis/rest/services/WyDOT_Highways_OpenData/FeatureServer"
-       });
-       
-       map.add(featureLayer_2);
-});
+
+        var symbol = {
+          type: "simple-marker", 
+          color: "teal"
+        };
+
+      csvLayer.renderer = {
+        type: "simple", // autocasts as new SimpleRenderer()
+        symbol: symbol
+      };
+
+      var map = new Map({
+        basemap: "gray",
+        layers: [csvLayer]
+      });
+
+var view = new MapView({
+        container: "viewDiv",
+        center: [-90.22939, 38.60675],
+        zoom: 11,
+        map: map
+      });
+
+    });
